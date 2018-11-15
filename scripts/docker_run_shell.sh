@@ -2,6 +2,7 @@
 SOURCE_DIR=`dirname ${BASH_SOURCE[0]}`
 cd $SOURCE_DIR
 source ./env.sh
+cd ..
 
 NAME="jupyter-shell"
 
