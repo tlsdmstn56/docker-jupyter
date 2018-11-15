@@ -59,71 +59,25 @@ python3 python3-dev python3-pip python3-virtualenv python3-software-properties
 RUN pip3 install --upgrade pip
 RUN pip3 install --cache-dir /tmp/pip3 --upgrade setuptools wheel
 
-# JAVA http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/server-jre-8u131-linux-x64.tar.gz
-#ENV JAVA_MAJOR_VERSION 8
-#ENV JAVA_UPDATE_VERSION 181 
-#ENV JAVA_BUILD_NUMBER 13
-#ENV JAVA_TOKEN 96a7b8442fe848ef90c96a2fad6ed6d1
-
-#RUN curl -sL --retry 3 --insecure \
-#--header "Cookie: oraclelicense=accept-securebackup-cookie;" \
-#"http://download.oracle.com/otn-pub/java/jdk/${JAVA_MAJOR_VERSION}u${JAVA_UPDATE_VERSION}-b${JAVA_BUILD_NUMBER}/${JAVA_TOKEN}/server-jre-${JAVA_MAJOR_VERSION}u${JAVA_UPDATE_VERSION}-linux-x64.tar.gz" \
-#| gunzip | tar x -C /usr/local/ \
+# JAVA
 RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-
 RUN add-apt-repository ppa:webupd8team/java \
 && apt-get update \
 && apt-get install -y oracle-java8-installer 
-
 ENV JAVA_HOME $(readlink -f /usr/bin/java | sed "s:bin/java::")
-
 ENV PATH $PATH:$JAVA_HOME/bin
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
 maven
-
-# Scala
-ENV SCALA_VERSION 2.11.11
-ENV SCALA_HOME /usr/local/scala-${SCALA_VERSION}
-
-ENV PATH $PATH:$SCALA_HOME/bin
-RUN curl -sL --retry 3 --insecure \
-"https://downloads.lightbend.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz" \
-| gunzip | tar x -C /usr/local/ \
-&& ln -s $SCALA_HOME /usr/local/scala
-
-# Julia
-# install Julia packages in /opt/julia instead of $HOME
-ENV JULIA_PKGDIR /opt/julia
-ENV JULIA_VERSION 1.0.0
-
-RUN mkdir /opt/julia-${JULIA_VERSION} && \
-    cd /tmp && \
-    wget -q https://julialang-s3.julialang.org/bin/linux/x64/`echo ${JULIA_VERSION} | cut -d. -f 1,2`/julia-${JULIA_VERSION}-linux-x86_64.tar.gz && \
-    echo "bea4570d7358016d8ed29d2c15787dbefaea3e746c570763e7ad6040f17831f3 *julia-${JULIA_VERSION}-linux-x86_64.tar.gz" | sha256sum -c - && \
-    tar xzf julia-${JULIA_VERSION}-linux-x86_64.tar.gz -C /opt/julia-${JULIA_VERSION} --strip-components=1 && \
-    rm /tmp/julia-${JULIA_VERSION}-linux-x86_64.tar.gz
-RUN ln -fs /opt/julia-*/bin/julia /usr/local/bin/julia
 
 # R
 RUN apt-get update && apt-get --allow-unauthenticated install -y --no-install-recommends \
 r-base r-base-dev
 
-# Go
-ENV GO_VERSION 1.9.6
-ENV GO_OS linux
-ENV GO_ARCH amd64
-RUN wget https://dl.google.com/go/go$GO_VERSION.$GO_OS-$GO_ARCH.tar.gz
-RUN tar -C /usr/local/ -xzf go$GO_VERSION.$GO_OS-$GO_ARCH.tar.gz
-RUN mv /usr/local/go /usr/local/go-$GO_VERSION
-RUN ln -s /usr/local/go-$GO_VERSION /usr/local/go
-ENV PATH $PATH:/usr/local/go/bin
-
 # Database
 RUN apt-get update && apt-get install -y --no-install-recommends \
 libmysqlclient-dev libpq-dev postgresql-client
 
-# FUSE
+# FUSE file system
 RUN apt-get update && apt-get install -y --no-install-recommends \
 automake autotools-dev g++ git libcurl4-gnutls-dev libssl-dev libxml2-dev make pkg-config \
 fuse libfuse-dev
@@ -143,7 +97,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 blobfuse
 
 # SPARK
-ENV SPARK_VERSION 2.3.1
+ENV SPARK_VERSION 2.3.2
 ENV SPARK_PACKAGE spark-${SPARK_VERSION}-bin-hadoop2.7
 ENV SPARK_HOME /usr/local/spark-${SPARK_VERSION}
 ENV PY4J_VERSION 0.10.7
@@ -167,24 +121,22 @@ ENV SLUGIFY_USES_TEXT_UNIDECODE yes
 # Python2 Deps
 RUN pip2 install --cache-dir /tmp/pip2 --timeout 600 numpy scipy scikit-learn matplotlib pandas pandas_ml pandas-datareader quandl h5py
 RUN pip2 install --cache-dir /tmp/pip2 --timeout 600 statsmodels imblearn awscli seaborn xgboost nbformat boto3 xlrd pyarrow
-RUN pip2 install --cache-dir /tmp/pip2 --timeout 600 docker fabric pytest pycrypto Flask flask_bcrypt
+RUN pip2 install --cache-dir /tmp/pip2 --timeout 600 docker fabric pytest pycrypto
 RUN pip2 install --cache-dir /tmp/pip2 --timeout 600 mysql-python mysql-connector-python-rf
 RUN pip2 install --cache-dir /tmp/pip2 --timeout 600 pymysql psycopg2 sqlalchemy
-RUN pip2 install --cache-dir /tmp/pip2 --timeout 600 apache-airflow apache-airflow[s3,postgres,mysql,crypto,password]
 
 # Python3 Deps
 RUN pip3 install --cache-dir /tmp/pip3 --timeout 600 numpy scipy sklearn matplotlib pandas pandas_ml pandas-datareader quandl h5py
 RUN pip3 install --cache-dir /tmp/pip3 --timeout 600 statsmodels imblearn awscli seaborn xgboost nbformat boto3 xlrd pyarrow
-RUN pip3 install --cache-dir /tmp/pip3 --timeout 600 docker fabric pytest pycrypto Flask flask_bcrypt
+RUN pip3 install --cache-dir /tmp/pip3 --timeout 600 docker fabric pytest pycrypto
 RUN pip3 install --cache-dir /tmp/pip3 --timeout 600 mysqlclient mysql-connector-python-rf
 RUN pip3 install --cache-dir /tmp/pip3 --timeout 600 pymysql psycopg2 sqlalchemy
-RUN pip3 install --cache-dir /tmp/pip3 --timeout 600 apache-airflow apache-airflow[s3,postgres,mysql,crypto,password]
 RUN pip3 install --cache-dir /tmp/pip3 --timeout 600 ghp-import2 nikola[extras]
 
 # DeepLearning
 ARG gpu="FALSE"
 ENV GPU ${gpu}
-ENV TENSORFLOW_VER 1.9.0rc0
+ENV TENSORFLOW_VER 1.11.0
 ENV PYTORCH_VER 0.4.0
 RUN echo "GPU: $GPU"
 RUN if [[ $GPU = *TRUE* ]] \
@@ -227,18 +179,25 @@ RUN python2 -m ipykernel install --user
 RUN python3 -m pip install ipykernel
 RUN python3 -m ipykernel install --user
 
-# Jupyter Scala
-RUN git clone https://github.com/alexarchambault/jupyter-scala.git;cd jupyter-scala;./jupyter-scala
+# Scala via coursier and Jupyter Scala
+# ENV SCALA_VERSION 2.11.11
+# ENV SCALA_HOME /usr/local/scala-${SCALA_VERSION}
 
-# Jupyter Julia Kernel
-#RUN julia -e 'import Pkg;Pkg.init()' && \
-RUN julia -e 'import Pkg;Pkg.update()' && \
-julia -e 'import Pkg;Pkg.add("Gadfly")' && \
-julia -e 'import Pkg;Pkg.add("RDatasets")' && \
-#julia -e 'Pkg.add("Spark.jl")' && \
-julia -e 'import Pkg;Pkg.add("IJulia")' && \
-# Precompile Julia packages
-julia -e 'using IJulia'
+# ENV PATH $PATH:$SCALA_HOME/bin
+# RUN curl -sL --retry 3 --insecure \
+# "https://downloads.lightbend.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz" \
+# | gunzip | tar x -C /usr/local/ \
+# && ln -s $SCALA_HOME /usr/local/scala
+ENV SCALA_VERSION 2.11.12
+ENV ALMOND_VERSION 0.1.11
+RUN curl -L -o coursier https://git.io/coursier && chmod +x coursier
+RUN ./coursier bootstrap \
+    -i user -I user:sh.almond:scala-kernel-api_$SCALA_VERSION:$ALMOND_VERSION \
+    sh.almond:scala-kernel_$SCALA_VERSION:$ALMOND_VERSION \
+    -o almond
+RUN ./almond --install && rm -f ./almond
+
+RUN git clone https://github.com/alexarchambault/jupyter-scala.git;cd jupyter-scala;./jupyter-scala
 
 # Jupyter R kernel
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -248,16 +207,6 @@ RUN R -e "install.packages(c('pbdZMQ', 'devtools', 'IRdisplay', 'evaluate', 'cra
 RUN R -e "install.packages(c('SparkR'), repos='http://cran.rstudio.com/')"
 RUN R -e "devtools::install_github('IRkernel/IRkernel')"
 RUN R -e "IRkernel::installspec()"
-
-# Go Kernel
-ENV LGOPATH $HOME/lgo
-ENV GOPATH $HOME/go
-ENV PATH $PATH:$GOPATH/bin:$LGOPATH/bin
-RUN apt-get update && apt-get install -y --no-install-recommends \
-libzmq3-dev
-RUN go get github.com/yunabe/lgo/cmd/lgo && go get -d github.com/yunabe/lgo/cmd/lgo-internal
-RUN lgo install
-RUN python3 $(go env GOPATH)/src/github.com/yunabe/lgo/bin/install_kernel
 
 # Env
 VOLUME /root/volume
