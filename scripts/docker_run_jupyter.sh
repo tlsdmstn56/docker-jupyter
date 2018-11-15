@@ -21,9 +21,13 @@ else
 DOCKER="docker"
 IMAGE="$JUPYTER_IMAGE"
 TAG="$JUPYTER_TAG"
-fi
+fi\
 
-$DOCKER rm -f $JUPYTER_NAME
+CHECK_CONTAINER="$(docker ps --all --quiet --filter=name="$JUPYTER_NAME")"
+if [ -n "$CHECK_CONTAINER" ]; then
+  echo "$JUPYTER_NAME is running, stopping and deleting"
+  docker rm -f $JUPYTER_NAME
+fi
 $DOCKER run -i -t -d --name $JUPYTER_NAME \
 --privileged --restart=always \
 -p $JUPYTER_PORT:8888 -p $JUPYTER_RESTAPIPORT:8088 \
