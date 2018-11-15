@@ -12,7 +12,7 @@ pip3 install -r $REQUIREMENTS_PATH >> $JUPYTERLOG_PATH 2>&1
 
 mkdir -p /root/volume/logs
 mkdir /root/.jupyter >> $JUPYTERLOG_PATH 2>&1
-cp /root/volume/scripts/jupyter_notebook_config.py /root/.jupyter/ >> $JUPYTERLOG_PATH 2>&1
+cp /root/volume/docker/jupyter_notebook_config.py /root/.jupyter/ >> $JUPYTERLOG_PATH 2>&1
 jupyter contrib nbextension install --user >> $JUPYTERLOG_PATH 2>&1
 jupyter nbextensions_configurator enable --user >> $JUPYTERLOG_PATH 2>&1
 jupyter nbextension enable tree-filter/index >> $JUPYTERLOG_PATH 2>&1
