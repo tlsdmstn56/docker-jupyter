@@ -1,5 +1,6 @@
 #!/bin/bash
-
+SOURCE_DIR=`dirname ${BASH_SOURCE[0]}`
+cd $SOURCE_DIR
 source ./env.sh
 
 if [ "$JUPYTER_GPU" = "TRUE" ]
