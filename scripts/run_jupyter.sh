@@ -1,7 +1,7 @@
 #!/bin/sh
 
 SPARKENV_PATH="/root/volume/scripts/spark-env.sh"
-REQUIREMENTS_PATH="/root/volume/scripts/requirements.txt"
+REQUIREMENTS_PATH="/root/volume/docker/requirements.txt"
 JUPYTERLOG_PATH="/root/volume/logs/jupyter.log"
 
 #Spark Env
