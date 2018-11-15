@@ -60,19 +60,24 @@ RUN pip3 install --upgrade pip
 RUN pip3 install --cache-dir /tmp/pip3 --upgrade setuptools wheel
 
 # JAVA http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/server-jre-8u131-linux-x64.tar.gz
-ENV JAVA_MAJOR_VERSION 8
-ENV JAVA_UPDATE_VERSION 181 
-ENV JAVA_BUILD_NUMBER 13
-ENV JAVA_TOKEN 96a7b8442fe848ef90c96a2fad6ed6d1
-ENV JAVA_HOME /usr/local/jdk1.${JAVA_MAJOR_VERSION}.0_${JAVA_UPDATE_VERSION}
+#ENV JAVA_MAJOR_VERSION 8
+#ENV JAVA_UPDATE_VERSION 181 
+#ENV JAVA_BUILD_NUMBER 13
+#ENV JAVA_TOKEN 96a7b8442fe848ef90c96a2fad6ed6d1
+
+#RUN curl -sL --retry 3 --insecure \
+#--header "Cookie: oraclelicense=accept-securebackup-cookie;" \
+#"http://download.oracle.com/otn-pub/java/jdk/${JAVA_MAJOR_VERSION}u${JAVA_UPDATE_VERSION}-b${JAVA_BUILD_NUMBER}/${JAVA_TOKEN}/server-jre-${JAVA_MAJOR_VERSION}u${JAVA_UPDATE_VERSION}-linux-x64.tar.gz" \
+#| gunzip | tar x -C /usr/local/ \
+RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+
+RUN add-apt-repository ppa:webupd8team/java \
+&& apt-get update \
+&& apt-get install -y oracle-java8-installer 
+
+ENV JAVA_HOME $(readlink -f /usr/bin/java | sed "s:bin/java::")
 
 ENV PATH $PATH:$JAVA_HOME/bin
-RUN curl -sL --retry 3 --insecure \
---header "Cookie: oraclelicense=accept-securebackup-cookie;" \
-"http://download.oracle.com/otn-pub/java/jdk/${JAVA_MAJOR_VERSION}u${JAVA_UPDATE_VERSION}-b${JAVA_BUILD_NUMBER}/${JAVA_TOKEN}/server-jre-${JAVA_MAJOR_VERSION}u${JAVA_UPDATE_VERSION}-linux-x64.tar.gz" \
-| gunzip | tar x -C /usr/local/ \
-&& ln -s $JAVA_HOME /usr/local/java \
-&& rm -rf $JAVA_HOME/man
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
 maven
