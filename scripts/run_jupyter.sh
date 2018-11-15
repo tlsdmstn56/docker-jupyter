@@ -18,6 +18,6 @@ jupyter nbextensions_configurator enable --user >> $JUPYTERLOG_PATH 2>&1
 jupyter nbextension enable tree-filter/index >> $JUPYTERLOG_PATH 2>&1
 jupyter nbextension enable toggle_all_line_numbers/main >> $JUPYTERLOG_PATH 2>&1
 jupyter nbextension enable toc2/main >> $JUPYTERLOG_PATH 2>&1
-#jupyter nbextension enable code_prettify/code_prettify >> $JUPYTERLOG_PATH 2>&1
+jupyter nbextension enable code_prettify/code_prettify >> $JUPYTERLOG_PATH 2>&1
 jupyter nbextension enable codefolding/edit >> $JUPYTERLOG_PATH 2>&1
 jupyter notebook --allow-root >> $JUPYTERLOG_PATH 2>&1
