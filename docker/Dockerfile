@@ -197,8 +197,6 @@ RUN ./coursier bootstrap \
     -o almond
 RUN ./almond --install && rm -f ./almond
 
-RUN git clone https://github.com/alexarchambault/jupyter-scala.git;cd jupyter-scala;./jupyter-scala
-
 # Jupyter R kernel
 RUN apt-get update && apt-get install -y --no-install-recommends \
 libcurl4-gnutls-dev libxml2-dev libssl-dev
