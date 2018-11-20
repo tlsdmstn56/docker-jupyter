@@ -37,7 +37,7 @@ libfreetype6-dev libxft-dev
 RUN apt-get update && apt-get install -y --no-install-recommends \
 software-properties-common libjpeg-dev libpng-dev ncurses-dev imagemagick \
 libgraphicsmagick1-dev libzmq-dev gfortran gnuplot gnuplot-x11 libsdl2-dev \
-openssh-client htop iputils-ping
+openssh-client htop iputils-ping libsasl2-dev
 
 # Docker
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -68,6 +68,13 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-oracle/jre/
 ENV PATH $PATH:$JAVA_HOME/bin
 RUN apt-get update && apt-get install -y --no-install-recommends \
 maven
+
+# sbt
+RUN echo "deb https://dl.bintray.com/sbt/debian /" \
+| tee -a /etc/apt/sources.list.d/sbt.list \
+&& apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823 \
+&& apt-get update \
+&& apt-get install sbt
 
 # R
 RUN apt-get update && apt-get --allow-unauthenticated install -y --no-install-recommends \
@@ -179,17 +186,16 @@ RUN python2 -m ipykernel install --user
 RUN python3 -m pip install ipykernel
 RUN python3 -m ipykernel install --user
 
-# Scala via coursier and Jupyter Scala
-# ENV SCALA_VERSION 2.11.11
-# ENV SCALA_HOME /usr/local/scala-${SCALA_VERSION}
+# Scala and Jupyter Scala
+ENV SCALA_VERSION 2.12.7
+ENV SCALA_HOME /usr/local/scala-${SCALA_VERSION}
+ENV PATH $PATH:$SCALA_HOME/bin
+RUN curl -sL --retry 3 --insecure \
+"https://downloads.lightbend.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz" \
+| gunzip | tar x -C /usr/local/ \
+&& ln -s $SCALA_HOME /usr/local/scala
 
-# ENV PATH $PATH:$SCALA_HOME/bin
-# RUN curl -sL --retry 3 --insecure \
-# "https://downloads.lightbend.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz" \
-# | gunzip | tar x -C /usr/local/ \
-# && ln -s $SCALA_HOME /usr/local/scala
-ENV SCALA_VERSION 2.11.12
-ENV ALMOND_VERSION 0.1.11
+ENV ALMOND_VERSION 0.1.9
 RUN curl -L -o coursier https://git.io/coursier && chmod +x coursier
 RUN ./coursier bootstrap \
     -i user -I user:sh.almond:scala-kernel-api_$SCALA_VERSION:$ALMOND_VERSION \
@@ -200,9 +206,10 @@ RUN ./almond --install && rm -f ./almond
 # Jupyter R kernel
 RUN apt-get update && apt-get install -y --no-install-recommends \
 libcurl4-gnutls-dev libxml2-dev libssl-dev
-RUN R -e "install.packages(c('curl', 'repr', 'httr'), repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages(c('pbdZMQ', 'devtools', 'IRdisplay', 'evaluate', 'crayon', 'uuid', 'digest'), repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages(c('SparkR'), repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('parallel', repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages(c('curl', 'repr', 'httr'), repos='http://cran.rstudio.com/', Ncpus=parallel::detectCores())"
+RUN R -e "install.packages(c('pbdZMQ', 'devtools', 'IRdisplay', 'evaluate', 'crayon', 'uuid', 'digest'), repos='http://cran.rstudio.com/', Ncpus=parallel::detectCores())"
+RUN R -e "install.packages(c('SparkR'), repos='http://cran.rstudio.com/', Ncpus=parallel::detectCores())"
 RUN R -e "devtools::install_github('IRkernel/IRkernel')"
 RUN R -e "IRkernel::installspec()"
 
