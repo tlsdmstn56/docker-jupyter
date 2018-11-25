@@ -1,0 +1,25 @@
+version: '3'
+services:
+  jupyter-docker:
+    build: .
+      args:
+        - locale: "ko_KR.UTF-8"
+        - gpu: "TRUE" # TRUE | FALSE
+    image: "comafire/docker-jupyter-gpu:0.1"
+    container_name: "jupyter-eunsoo"
+    ports:
+      - 10000:8888 # jupyter port
+      - 10020:8088 # jupyer kernel gateway port
+      - 10040:52698 # rmate port
+    environment:
+      - JUPYTER_NAME: "jupyter-eunsoo"
+      - JUPYTER_VOLUME: &JUPYTER_VOLUME ""
+      - JUPYTER_PASSWORD: "20131120"
+      - JUPYTER_BASEURL: "jupyter"
+      - JUPYTER_DATA_DIR: &JUPYTER_DATA_DIR "/disk4/"
+    volumes:
+      - *JUPYTER_DATA_DIR: /data
+      - *JUPYTER_VOLUME: /root/volume
+    command: /root/volume/scripts/run_jupyter.sh
+    privileged: true
+    restart: always
