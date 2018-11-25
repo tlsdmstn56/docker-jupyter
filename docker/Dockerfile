@@ -213,6 +213,10 @@ RUN R -e "install.packages(c('SparkR'), repos='http://cran.rstudio.com/', Ncpus=
 RUN R -e "devtools::install_github('IRkernel/IRkernel')"
 RUN R -e "IRkernel::installspec()"
 
+RUN wget -O /usr/local/bin/rmate \
+https://raw.githubusercontent.com/aurora/rmate/master/rmate && \
+chmod a+x /usr/local/bin/rmate
+
 # Env
 VOLUME /root/volume
 WORKDIR /root/volume
