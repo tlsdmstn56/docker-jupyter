@@ -22,10 +22,11 @@ DOCKER="docker"
 IMAGE="$JUPYTER_IMAGE"
 TAG="$JUPYTER_TAG"
 fi
-if [ ! "$DATA_DIR" = "" ];then
-    DATA_DIR_OPTION="-v $DATA_DIR:/root/data"
+
+if [[ ! "$JUPYTER_DATA_DIR" = "" ]];then
+DOCKER_DATA_DIR_OPTION="-v $JUPYTER_DATA_DIR:/data"
 else
-    DATA_DIR_OPTION=""
+DOCKER_DATA_DIR_OPTION=""
 fi
 CHECK_CONTAINER="$(docker ps --all --quiet --filter=name="$JUPYTER_NAME")"
 if [ -n "$CHECK_CONTAINER" ]; then
@@ -38,6 +39,7 @@ echo "$DOCKER run -i -t -d --name $JUPYTER_NAME \
 --privileged --restart=always \
 -p $JUPYTER_PORT:8888 -p $JUPYTER_RESTAPIPORT:8088 \
 -v $JUPYTER_VOLUME:/root/volume \
+$DOCKER_DATA_DIR_OPTION \
 -e JUPYTER_BASEURL=$JUPYTER_BASEURL -e JUPYTER_PASSWORD=$JUPYTER_PASSWORD \
 $IMAGE:$TAG /root/volume/scripts/run_jupyter.sh"
 
@@ -45,6 +47,6 @@ $DOCKER run -i -t -d --name $JUPYTER_NAME \
 --privileged --restart=always \
 -p $JUPYTER_PORT:8888 -p $JUPYTER_RESTAPIPORT:8088 \
 -v $JUPYTER_VOLUME:/root/volume \
-$DATA_DIR_OPTION \
+$DOCKER_DATA_DIR_OPTION \
 -e JUPYTER_BASEURL=$JUPYTER_BASEURL -e JUPYTER_PASSWORD=$JUPYTER_PASSWORD \
 $IMAGE:$TAG /root/volume/scripts/run_jupyter.sh

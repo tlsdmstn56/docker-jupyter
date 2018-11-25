@@ -1,1 +1,4 @@
 bokeh
+tensorframes
+flint
+yapf
