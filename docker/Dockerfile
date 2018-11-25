@@ -1,6 +1,6 @@
 FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
-MAINTAINER comafire <comafire@gmail.com>
-
+LABEL maintainer="comafire, tlsdmstn56"
+LABEL email="comafire@gmail.com, eunsoo.sheen@gmail.com"
 # Bash
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
@@ -213,6 +213,7 @@ RUN R -e "install.packages(c('SparkR'), repos='http://cran.rstudio.com/', Ncpus=
 RUN R -e "devtools::install_github('IRkernel/IRkernel')"
 RUN R -e "IRkernel::installspec()"
 
+# rmate
 RUN wget -O /usr/local/bin/rmate \
 https://raw.githubusercontent.com/aurora/rmate/master/rmate && \
 chmod a+x /usr/local/bin/rmate
